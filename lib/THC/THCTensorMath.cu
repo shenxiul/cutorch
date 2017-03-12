@@ -28,6 +28,34 @@ struct TensorFillOp {
   const T val;
 };
 
+template<typename T>
+struct TensorLinspaceOp {
+  __host__ __device__ TensorLinspaceOp(T start, T step, T* start_ptr): 
+    start_(start), step_(step), start_ptr_(start_ptr) { }
+  __device__ __forceinline__ void operator()(T* v) {
+    ptrdiff_t index = v - start_ptr_;
+    T increment = THCNumerics<T>::mul(step_, ScalarConvert<ptrdiff_t,T>::to(index));
+    *v = THCNumerics<T>::add(start_, increment);
+  }
+
+  const T start_, step_;
+  const T* start_ptr_;
+};
+
+template<typename T>
+struct TensorLogspaceOp {
+  __host__ __device__ TensorLogspaceOp(T start, T step, T* start_ptr): 
+    start_(start), step_(step), start_ptr_(start_ptr) { }
+  __device__ __forceinline__ void operator()(T* v) {
+    ptrdiff_t index = v - start_ptr_;
+    T increment = THCNumerics<T>::mul(step_, ScalarConvert<ptrdiff_t,T>::to(index));
+    *v = THCNumerics<T>::exp10(THCNumerics<T>::add(start_, increment));
+  }
+
+  const T start_, step_;
+  const T* start_ptr_;
+};
+
 // copypasta from https://github.com/thrust/thrust/blob/master/examples/strided_range.cu
 template <typename Iterator>
 class strided_range

@@ -882,6 +882,98 @@ function test.ones()
    torch.setdefaulttensortype(t)
 end
 
+function test.linspace()
+   local sz1 = chooseInt(minsize, maxsize)
+   local sz2 = chooseInt(minsize, maxsize)
+   local n = sz1 * sz2
+   local a = torch.uniform()
+   local b = torch.uniform()
+   local x = torch.FloatTensor():rand(sz1, sz2)
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'linspace', a, b, n)
+   end
+   checkMultiDevice(x, 'linspace', a, b, n)
+
+   -- Check range for non-contiguous tensors.
+   local x = createTestTensorWithSizes(true, true, {sz1, sz2})
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'linspace', a, b, n)
+   end
+   checkMultiDevice(x, 'linspace', a, b, n)
+
+   -- Ckeck new tensor creation
+   local x = torch.FloatTensor()
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'linspace', a, b, n)
+   end
+   checkMultiDevice(x, 'linspace', a, b, n)
+
+   -- Ckeck n = 1 case
+   local x = torch.rand(1)
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'linspace', a, a, 1)
+   end
+   checkMultiDevice(x, 'linspace', a, a, 1)
+
+   -- Ckeck default parameter case
+   local x = createTestTensorWithSizes(true, true, {100})
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'linspace', a, b)
+   end
+   checkMultiDevice(x, 'linspace', a, b)
+end
+
+function test.logspace()
+   local sz1 = chooseInt(minsize, maxsize)
+   local sz2 = chooseInt(minsize, maxsize)
+   local n = sz1 * sz2
+   local a = torch.uniform()
+   local b = torch.uniform()
+   local x = torch.FloatTensor():rand(sz1, sz2)
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'logspace', a, b, n)
+   end
+   checkMultiDevice(x, 'logspace', a, b, n)
+
+   -- Check range for non-contiguous tensors.
+   local x = createTestTensorWithSizes(true, true, {sz1, sz2})
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'logspace', a, b, n)
+   end
+   checkMultiDevice(x, 'logspace', a, b, n)
+
+   -- Ckeck new tensor creation
+   local x = torch.FloatTensor()
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'logspace', a, b, n)
+   end
+   checkMultiDevice(x, 'logspace', a, b, n)
+
+   -- Ckeck n = 1 case
+   local x = torch.rand(1)
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'logspace', a, a, 1)
+   end
+   checkMultiDevice(x, 'logspace', a, a, 1)
+
+   -- Ckeck default parameter case
+   local x = createTestTensorWithSizes(true, true, {100})
+   for k, typename in ipairs(float_typenames) do
+      local x = x:type(t2cpu[typename])
+      compareCPUAndCUDATypeTensorArgs(typename, nil, x, 'logspace', a, b)
+   end
+   checkMultiDevice(x, 'logspace3', a, b)
+end
+
 
 function test.add()
    local sz1 = chooseInt(minsize, maxsize)

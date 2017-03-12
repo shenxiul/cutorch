@@ -981,6 +981,20 @@ for k, Tensor_ in pairs(handledTypenames) do
 
        end
 
+       wrap("linspace",
+            cname("linspace"),
+            {{name=Tensor, default=true, returned=true, method={default='nil'}},
+                {name=real},
+                {name=real},
+                {name="long", default=100}})
+
+       wrap("logspace",
+            cname("logspace"),
+            {{name=Tensor, default=true, returned=true, method={default='nil'}},
+                {name=real},
+                {name=real},
+                {name="long", default=100}})
+
        wrap("pow",
             cname("pow"),
             {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1424,6 +1438,20 @@ wrap("zeros",
         cname("ones"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
            {name="LongArg"}})
+
+wrap("linspace",
+     cname("linspace"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=real},
+         {name=real},
+         {name="long", default=100}})
+
+wrap("logspace",
+     cname("logspace"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=real},
+         {name=real},
+         {name="long", default=100}})
 
    wrap("reshape",
         cname("reshape"),

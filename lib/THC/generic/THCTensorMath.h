@@ -18,5 +18,11 @@ THC_API void THCTensor_(triu)(THCState *state, THCTensor *self, THCTensor *src, 
 THC_API void THCTensor_(diag)(THCState *state, THCTensor *self, THCTensor *src, long k);
 THC_API accreal THCTensor_(trace)(THCState *state, THCTensor *self);
 
+#if defined(THC_REAL_IS_FLOAT) || defined(THC_REAL_IS_DOUBLE) || defined(THC_REAL_IS_HALF)
+
+THC_API void THCTensor_(linspace)(THCState *state, THCTensor *r_, real a, real b, long n);
+THC_API void THCTensor_(logspace)(THCState *state, THCTensor *r_, real a, real b, long n);
+
+#endif
 
 #endif

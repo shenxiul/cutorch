@@ -391,4 +391,61 @@ accreal THCTensor_(trace)(THCState *state, THCTensor *src_) {
   return trace;
 }
 
+#if defined(THC_REAL_IS_FLOAT) || defined(THC_REAL_IS_DOUBLE) || defined(THC_REAL_IS_HALF)
+
+void THCTensor_(linspace)(THCState *state, THCTensor *r_, real a, real b, long n) {
+  THCAssertSameGPU(THCTensor_(checkGPU)(state, 1, r_));
+  THArgCheck(n > 1 || (n == 1 && (a == b)), 3, "invalid number of points");
+  if (THCTensor_(nElement)(state, r_) != n) THCTensor_(resize1d)(state, r_, n);
+  if (n == 1) THCTensor_(fill)(state, r_, a);
+  else {
+    THCTensor *r = THCTensor_(isContiguous)(state, r_) ? r_ : THCTensor_(newContiguous)(state, r_);
+    real step = THCNumerics<real>::div(THCNumerics<real>::sub(b, a), 
+                                       ScalarConvert<long,real>::to(n - 1));
+    TensorLinspaceOp<real> linspace_method(a, step, THCTensor_(data)(state, r));
+    if (!THC_pointwiseApply1(state, r, linspace_method)) {
+      THArgCheck(false, 1, CUTORCH_DIM_WARNING);
+    }
+    if (!THCTensor_(isContiguous)(state, r_)) THCTensor_(freeCopyTo)(state, r, r_);
+  }
+  THCudaCheck(cudaGetLastError());
+}
+
+void THCTensor_(logspace)(THCState *state, THCTensor *r_, real a, real b, long n) {
+  THCAssertSameGPU(THCTensor_(checkGPU)(state, 1, r_));
+  THArgCheck(n > 1 || (n == 1 && (a == b)), 3, "invalid number of points");
+  if (THCTensor_(nElement)(state, r_) != n) THCTensor_(resize1d)(state, r_, n);
+  if (n == 1) THCTensor_(fill)(state, r_, THCNumerics<real>::exp10(a));
+  else {
+    THCTensor *r = THCTensor_(isContiguous)(state, r_) ? r_ : THCTensor_(newContiguous)(state, r_);
+    real step = THCNumerics<real>::div(THCNumerics<real>::sub(b, a), 
+                                       ScalarConvert<long,real>::to(n - 1));
+    TensorLogspaceOp<real> logspace_method(a, step, THCTensor_(data)(state, r));
+    if (!THC_pointwiseApply1(state, r, logspace_method)) {
+      THArgCheck(false, 1, CUTORCH_DIM_WARNING);
+    }
+    if (!THCTensor_(isContiguous)(state, r_)) THCTensor_(freeCopyTo)(state, r, r_);
+  }
+  THCudaCheck(cudaGetLastError());
+}
+
+// void THCTensor_(logspace)(THCState *state, THCTensor *r_, real a, real b, long n) {
+//   THCAssertSameGPU(THCTensor_(checkGPU)(state, 1, r_));
+//   THArgCheck(n > 1 || (n == 1 && (a == b)), 3, "invalid number of points");
+//   if (THCTensor_(nElement)(state, r_) != n) THCTensor_(resize1d)(state, r_, n);
+//   if (n == 1) THCTensor_(fill)(state, r_, THCNumerics<real>::exp10(a));
+//   else {
+//     real step = THCNumerics<real>::div(THCNumerics<real>::sub(b, a), 
+//                                        ScalarConvert<long,real>::to(n - 1));
+//     TensorLogspaceOp<real,long> logspace_method(a, step);
+//     if (!THC_pointwiseWithIndexApply1(
+//           state, r_, logspace_method)) {
+//       THArgCheck(false, 1, CUTORCH_DIM_WARNING);
+//     }
+//   }
+//   THCudaCheck(cudaGetLastError());
+// }
+
+#endif
+
 #endif
